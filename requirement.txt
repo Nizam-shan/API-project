@@ -1,0 +1,36 @@
+
+                                            TASK LIST
+
+//requirements for our project
+
+// we are the book mgt company
+
+//books
+    //isbn ,title,pub date, lang, no pages,author[],category[]
+
+//authors
+    //id, name, books[],
+
+//publication
+    //id, name , books
+
+// we have to design and code api over this
+
+// books 
+    // we need api
+        //to get all book
+        // to get specific book
+        //to get a list of books based on category
+        //to get a list of book based on language
+
+authors 
+    we need api
+        to get all author
+        to get specific authors
+        to get list of author based on book
+
+publication
+    we need api
+        to get all the publication
+        to get specific publication
+        to get a list of publication based on the book
