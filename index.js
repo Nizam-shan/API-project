@@ -1,10 +1,14 @@
-
+var bodyParser = require("body-parser");
+const { json } = require("express");
 const express= require("express");
 // database connection
 const database = require("./database");
 //intitializing the express by booky
 const booky = express();
 // port number to route
+booky.use(bodyParser.urlencoded({extended : true}));
+booky.use(bodyParser.json());
+
 booky.listen(3000,() => {
     console.log("server is up and running");
 });
@@ -111,4 +115,107 @@ booky.get("/pub/P/:name",(req,res)=>{
         return res.json({error:`no such publication ${req.params.name}`});
     }
     return res.json({pub:specific});
+});
+
+
+//    post 
+// add new book
+booky.post("/book/new", (req,res) => {
+    const newBook = req.body;
+    database.books.push(newBook);
+    return res.json({updated:database.books});
+});
+
+
+// add new author
+
+booky.post("/author/new", (req, res) => {
+    const newAuthor = req.body;
+    database.author.push(newAuthor);
+    return res.json({update : database.author});
+});
+
+
+// add new publication
+
+booky.post("/pub/new", (req, res) => {
+    const newPub = req.body;
+   
+    database.publication.push(newPub);
+    
+    return res.json({update: database.publication});
+});
+
+booky.put("/publication/update/book/:isbn", (req , res) => {
+    //update the publication
+    database.publication.forEach((pub) => {
+        if(pub.id === req.body.pubID){
+            return pub.books.push(req.params.isbn);
+        }
+    });
+    // update book
+    database.books.forEach((book) =>{
+        if(book.ISBN === req.params.isbn){
+           book.publication = req.body.pubID;
+           return; 
+        }
+    });
+    return res.json(
+        {
+            books:database.books,
+            publ : database.publication,
+            msg :"successfuly updated"
+        }
+    );
+});
+
+// delete the book
+booky.delete("/book/delete/:isbn",(req, res) => {
+    // whichever book that doesnot match isbn jst send to an updated database array rest will be filterded out
+    const updatedBook = database.books.filter(
+        (book) => book.ISBN !== req.params.isbn
+    )
+    database.books = updatedBook;
+    return res.json({books:database.books});
+});
+
+// delete author from book
+// booky.delete("/delete/author/:author" ,(req, res) => {
+//     const authorDelete = database.books.author.filter (
+//         (book) => book.author === req.params.author
+//     )
+//     database.books=authorDelete;
+//     return res.json({books:database.books});
+// });
+
+// delete author from book and related book from author
+booky.delete("/book/delete/author/:isbn/:authorId",(req,res)=> {
+    // update the book db
+    database.books.forEach((book)=> {
+        if(book.ISBN === req.params.isbn){
+            const newAuthor = book.author.filter(
+                (eachAuthor) => eachAuthor !== parseInt(req.params.authorId)
+            );
+            book.author = newAuthor;
+            return;
+        };
+    });
+
+    //update the author database
+    database.author.forEach((eachAuthors) => {
+        if(eachAuthors.id === parseInt(req.params.authorId)){
+            const newBooklist = eachAuthors.books.filter(
+                (book) => book !== req.params.isbn
+            );
+            eachAuthors.books = newBooklist;
+            return ;
+        }
+    });
+    return res.json({
+        book:database.books,
+        author: database.author,
+        msg: "author was updated"
+    });
+    
+
 });

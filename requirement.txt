@@ -34,3 +34,19 @@ publication
         to get all the publication
         to get specific publication
         to get a list of publication based on the book
+
+post request 
+    add new book 
+    add new author
+    add new publication
+
+//put 
+    update book details if author is changed.
+
+// delete
+    delete the book
+    delete author from book
+    delete author from book and relatedbook from author
+
+
+    
